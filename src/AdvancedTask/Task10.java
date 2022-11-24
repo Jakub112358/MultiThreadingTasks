@@ -1,6 +1,7 @@
 package AdvancedTask;
 
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -10,19 +11,23 @@ import java.util.concurrent.Executors;
 // uruchom je wszystkie i poczekaj na zakończenie wszystkich wątków.
 // Wydrukuj ostateczną wartość licznika i sprawdź, czy jest poprawna.
 public class Task10 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        final int numberOfThreads = 10;
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+        CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
-        for (int i = 0; i < 10; i++) {
-            CounterThread counterThread = new CounterThread();
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            CounterThread counterThread = new CounterThread(countDownLatch);
             counterThread.setName(String.valueOf(i));
             executorService.execute(counterThread);
         }
         executorService.shutdown();
 
         // this loop is to wait until all threads are terminated
-        while (!executorService.isTerminated()) {
-        }
+        // while (!executorService.isTerminated()) {}
+        countDownLatch.await();
+
 
         System.out.println("final value of counter equals: " + Counter.getCounter() + ", expected value: 100");
 

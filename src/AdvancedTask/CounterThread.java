@@ -1,6 +1,13 @@
 package AdvancedTask;
 
+import java.util.concurrent.CountDownLatch;
+
 public class CounterThread extends Thread {
+    private final CountDownLatch countDownLatch;
+
+    public CounterThread (CountDownLatch countDownLatch){
+        this.countDownLatch = countDownLatch;
+    }
     @Override
     public void run() {
 
@@ -8,6 +15,7 @@ public class CounterThread extends Thread {
             Counter.inc();
             System.out.println(this.getName() + ": " + Counter.getCounter());
         }
+        countDownLatch.countDown();
     }
 
 
